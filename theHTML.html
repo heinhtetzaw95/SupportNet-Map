@@ -25,7 +25,8 @@
   <body>
 
     <input id="zipInput" type="number"/>
-  	<button id="demo" onclick="showInput()" type="button">button</button>
+  	<button id="demo" onclick="changeLocation()" type="button">Go</button>
+    <button id="myLoc" onclick="flyToMyLocation()" type="button"> My Location</button>
 
     <div id="map"></div>
     <div id="test"> </div>
@@ -37,14 +38,9 @@
       	var curr_long = 0;
         var zip = 0;
 
-		    var x = document.getElementById('demo');
+		    var x = document.getElementById('test');
 
         var mymap;
-        var geocoder;
-
-        function changeText(){
-          x.innerHTML = "test";
-        }
 
         function initMap(){
 
@@ -57,32 +53,40 @@
           };
 
           mymap = new google.maps.Map(document.getElementById('map'),
-              mapOptions);
+          mapOptions);
+
         }
 
         function changeLocation(){
+          var new_lat = 0; 
+          var new_lng = 0;
           var myZip = document.getElementById('zipInput').value;
-            test.innerHTML = myZip;
+          test.innerHTML = "Move to "+myZip;
+          
+          var geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ 'address': myZip }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    new_lat = results[0].geometry.location.lat();
+                    new_lng = results[0].geometry.location.lng();
 
-            geocoder.geocode( { 'address': myZip}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-              //Got result, center the map and put it out there
-              map.setCenter(results[0].geometry.location);
-              var marker = new google.maps.Marker({
-                  map: map,
-                  position: results[0].geometry.location
-              });
-            } else {
-              alert("Geocode was not successful for the following reason: " + status);
-            }
-          });
+                  //  test.innerHTML = new_lat + ", " + new_lng;
+                } else {
+                    alert("Request failed.");
+                }
 
+
+                test.innerHTML = new_lat + ", " + new_lng;
+                mymap.setCenter(new google.maps.LatLng(new_lat, new_lng));
+                mymap.setZoom(10);
+            });
+           
         }
-            //trial
-/*        function changeLocation(){
-            mymap.setCenter({lat: 21.9162, lng: 95.9560} );
+
+        function flyToMyLocation() {
+           
+                mymap.setCenter(new google.maps.LatLng(38.632499, -90.227847));
+                mymap.setZoom(15);
         }
-        */
 
 
     </script>
