@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+
+    <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+   
+    <title>Map</title>
+    
+    <style>
+
+    #map{
+     	  height: 500px;
+        width: 500px;
+    }
+
+    </style>
+  </head>
+
+  <body>
+
+    <input id="zipInput" type="number"/>
+  	<button id="demo" onclick="showInput()" type="button">button</button>
+
+    <div id="map"></div>
+    <div id="test"> </div>
+
+    <script>
+    		    //This script tag block goes to bottom of the webpage
+
+      	var curr_lat = 0;
+      	var curr_long = 0;
+        var zip = 0;
+
+		    var x = document.getElementById('demo');
+
+        var mymap;
+        var geocoder;
+
+        function changeText(){
+          x.innerHTML = "test";
+        }
+
+        function initMap(){
+
+                //38.627003, -90.199402 St. Louis area  (default)
+            var stl_coors = new google.maps.LatLng(38.627003, -90.199402);
+            var mapOptions = {
+            zoom: 10,
+            center: stl_coors,
+            //mapTypeId: 'terrain'
+          };
+
+          mymap = new google.maps.Map(document.getElementById('map'),
+              mapOptions);
+        }
+
+        function changeLocation(){
+          var myZip = document.getElementById('zipInput').value;
+            test.innerHTML = myZip;
+
+            geocoder.geocode( { 'address': myZip}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+              //Got result, center the map and put it out there
+              map.setCenter(results[0].geometry.location);
+              var marker = new google.maps.Marker({
+                  map: map,
+                  position: results[0].geometry.location
+              });
+            } else {
+              alert("Geocode was not successful for the following reason: " + status);
+            }
+          });
+
+        }
+            //trial
+/*        function changeLocation(){
+            mymap.setCenter({lat: 21.9162, lng: 95.9560} );
+        }
+        */
+
+
+    </script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-rOcfVyM_WepTQEdwU8hdfCXb7MggUXk&callback=initMap"> </script>
+
+  </body>
+</html>
