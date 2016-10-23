@@ -4,7 +4,7 @@
 
 
     <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
-    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places" type="text/javascript"></script>
     
 
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
@@ -41,20 +41,50 @@
 		    var x = document.getElementById('test');
 
         var mymap;
+        var infowindow;
 
         function initMap(){
 
                 //38.627003, -90.199402 St. Louis area  (default)
             var stl_coors = new google.maps.LatLng(38.627003, -90.199402);
             var mapOptions = {
-            zoom: 10,
-            center: stl_coors,
-            //mapTypeId: 'terrain'
-          };
+                zoom: 13,
+                center: stl_coors,
+                //mapTypeId: 'terrain'
+            };
 
-          mymap = new google.maps.Map(document.getElementById('map'),
-          mapOptions);
+            mymap = new google.maps.Map(document.getElementById('map'),
+            mapOptions);
 
+            infowindow = new google.maps.InfoWindow();
+            var service = new google.maps.places.PlacesService(mymap);
+            service.nearbySearch({
+                location: stl_coors,
+                radius: 5000,
+                keyword: 'shelter'
+            }, callback);
+        }
+
+        function callback(results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            for (var i = 0; i < results.length; i++) {
+              createMarker(results[i]);
+            }
+          }
+        }
+
+        function createMarker(place) {
+          var placeLoc = place.geometry.location;
+          var marker = new google.maps.Marker({
+              map: mymap,
+              position: place.geometry.location
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+                infowindow.setContent(place.name);
+                infowindow.open(mymap, this);
+                alert("You clicked on "+place.name);
+              });
         }
 
         function changeLocation(){
@@ -68,30 +98,29 @@
                 if (status == google.maps.GeocoderStatus.OK) {
                     new_lat = results[0].geometry.location.lat();
                     new_lng = results[0].geometry.location.lng();
-
-                  //  test.innerHTML = new_lat + ", " + new_lng;
-                } else {
+                } 
+                else {
                     alert("Request failed.");
                 }
-
 
                 test.innerHTML = new_lat + ", " + new_lng;
                 mymap.setCenter(new google.maps.LatLng(new_lat, new_lng));
                 mymap.setZoom(10);
+
+            
             });
-           
         }
 
+              //*this* arena location
         function flyToMyLocation() {
-           
                 mymap.setCenter(new google.maps.LatLng(38.632499, -90.227847));
-                mymap.setZoom(15);
+                mymap.setZoom(10);
         }
 
 
     </script>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-rOcfVyM_WepTQEdwU8hdfCXb7MggUXk&callback=initMap"> </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-rOcfVyM_WepTQEdwU8hdfCXb7MggUXk&libraries=places&callback=initMap"> </script>
 
   </body>
 </html>
